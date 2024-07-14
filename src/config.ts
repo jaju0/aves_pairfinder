@@ -19,6 +19,7 @@ declare global
             ADFULLER_SIGNIFICANCE_LEVEL?: "1%" | "2.5%" | "5%" | "10%";
             PAIR_FINDER_MAX_TSTAT?: string;
             PAIR_FINDER_MAX_HALF_LIFE?: string;
+            PAIR_FINDER_ALLOWED_KLINE_INTERVALS?: string;
             PAIR_EXPIRATION_HOURS?: string;
         }
     }
@@ -38,6 +39,7 @@ const config = {
     ADFULLER_SIGNIFICANCE_LEVEL: process.env.ADFULLER_SIGNIFICANCE_LEVEL,
     PAIR_FINDER_MAX_TSTAT: process.env.PAIR_FINDER_MAX_TSTAT,
     PAIR_FINDER_MAX_HALF_LIFE: process.env.PAIR_FINDER_MAX_HALF_LIFE,
+    PAIR_FINDER_ALLOWED_KLINE_INTERVALS: process.env.PAIR_FINDER_ALLOWED_KLINE_INTERVALS ?? "*",
     PAIR_EXPIRATION_HOURS: process.env.PAIR_EXPIRATION_HOURS ?? "24",
 };
 

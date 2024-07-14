@@ -12,11 +12,14 @@ export class PairFinder
     private restClient: RestClientV5;
     private isRunning: boolean;
 
+    private allowedKlineIntervals: KlineIntervalV3[];
+
     constructor(instInfoProvider: InstrumentsInfoProvider, restClient: RestClientV5)
     {
         this.instInfoProvider = instInfoProvider;
         this.restClient = restClient;
         this.isRunning = false;
+        this.allowedKlineIntervals = this.getAllowedKlineIntervalsFromConfig();
     }
 
     public async run()
@@ -89,6 +92,22 @@ export class PairFinder
         return this.isRunning;
     }
 
+    private getAllowedKlineIntervalsFromConfig()
+    {
+        if(config.PAIR_FINDER_ALLOWED_KLINE_INTERVALS === "*")
+            return klineInterval as unknown as KlineIntervalV3[];
+
+        const extractedConfigValues = config.PAIR_FINDER_ALLOWED_KLINE_INTERVALS.split(",").map(val => val.trim());
+        const klineIntervals = new Set(klineInterval);
+        for(const value of extractedConfigValues)
+        {
+            if(!klineIntervals.has(value as KlineIntervalV3))
+                throw new Error(`${value} is not an allowed kline interval. Please check your config.`);
+        }
+
+        return extractedConfigValues as KlineIntervalV3[];
+    }
+
     private async getTwoRandomSymbols()
     {
         const symbols = Array.from(await this.instInfoProvider.getSymbols());
@@ -106,8 +125,8 @@ export class PairFinder
 
     private getRandomKlineInterval()
     {
-        const randomIndex = Math.floor(Math.random() * klineInterval.length);
-        return klineInterval[randomIndex];
+        const randomIndex = Math.floor(Math.random() * this.allowedKlineIntervals.length);
+        return this.allowedKlineIntervals[randomIndex];
     }
 
     private async getPrices(symbol: string, interval: KlineIntervalV3, sampleSize: number)
