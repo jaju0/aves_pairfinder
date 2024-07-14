@@ -1,6 +1,6 @@
 {
   "type": "module",
-  "name": "finder_api",
+  "name": "pairfinder",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -14,7 +14,18 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.14.10",
+    "@types/ws": "^8.5.11",
+    "concurrently": "^8.2.2",
+    "typescript": "^5.5.3"
   },
   "dependencies": {
+    "bybit-api": "^3.10.11",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "mathjs": "^13.0.2",
+    "mongoose": "^8.5.1",
+    "ws": "^8.18.0"
   }
 }
