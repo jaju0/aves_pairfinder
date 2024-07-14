@@ -43,19 +43,17 @@ export class PairFinder
 
                 const priceRegressionResults = OLS(symbol1Prices, symbol2Prices);
                 const residualsArray = priceRegressionResults.residuals.toArray().map(value => value.valueOf() as number);
-                const adfullerResults = adfuller(residualsArray, config.ADFULLER_MAX_LAG ? +config.ADFULLER_MAX_LAG : undefined, config.ADFULLER_MODEL);
+                const halfLife = Math.abs(ar_halfLife(residualsArray));
 
+                if(config.PAIR_FINDER_MAX_HALF_LIFE && halfLife > +config.PAIR_FINDER_MAX_HALF_LIFE)
+                    continue;
+
+                const adfullerResults = adfuller(residualsArray, config.ADFULLER_MAX_LAG ? +config.ADFULLER_MAX_LAG : undefined, config.ADFULLER_MODEL);
                 const slope = priceRegressionResults.params as number;
                 const tstat = +(adfullerResults.result.tstat.valueOf() as string);
                 const lagUsed = adfullerResults.lagUsed;
-                const halfLife = Math.abs(ar_halfLife(residualsArray));
-
-                console.log(`${symbol1}-${symbol2}-${interval}`);
 
                 if(config.ADFULLER_SIGNIFICANCE_LEVEL && mathjs.larger(adfullerResults.result.tstat, adfullerResults.criticalValues[config.ADFULLER_SIGNIFICANCE_LEVEL]))
-                    continue;
-
-                if(config.PAIR_FINDER_MAX_HALF_LIFE && halfLife > +config.PAIR_FINDER_MAX_HALF_LIFE)
                     continue;
 
                 if(config.PAIR_FINDER_MAX_TSTAT && tstat > +config.PAIR_FINDER_MAX_TSTAT)
@@ -146,20 +144,3 @@ export class PairFinder
         return prices;
     }
 }
-
-// TODO: add interval filter that can be passed as a config value
-
-/** TODO: fix this bug
-aves-pairfinder  | [1] file:///app/node_modules/.pnpm/mathjs@13.0.2/node_modules/mathjs/lib/esm/function/matrix/inv.js:136
-aves-pairfinder  | [1]           throw Error('Cannot calculate inverse, determinant is zero');
-aves-pairfinder  | [1]                 ^
-aves-pairfinder  | [1] 
-aves-pairfinder  | [1] Error: Cannot calculate inverse, determinant is zero
-aves-pairfinder  | [1]     at _inv (file:///app/node_modules/.pnpm/mathjs@13.0.2/node_modules/mathjs/lib/esm/function/matrix/inv.js:136:17)
-aves-pairfinder  | [1]     at Module.ArrayMatrix (file:///app/node_modules/.pnpm/mathjs@13.0.2/node_modules/mathjs/lib/esm/function/matrix/inv.js:61:31)
-aves-pairfinder  | [1]     at Module.inv (/app/node_modules/.pnpm/typed-function@4.2.1/node_modules/typed-function/lib/umd/typed-function.js:1462:22)
-aves-pairfinder  | [1]     at OLS (file:///app/dist/core/statistics.js:35:23)
-aves-pairfinder  | [1]     at adfuller (file:///app/dist/core/statistics.js:142:28)
-aves-pairfinder  | [1]     at PairFinder.run (file:///app/dist/core/PairFinder.js:29:37)
-aves-pairfinder  | [1]     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
- */
