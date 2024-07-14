@@ -36,7 +36,10 @@ export class InstrumentsInfoProvider
             const instrumentsInfoResponse = await this.restClient.getInstrumentsInfo({ category: "linear" });
             this.instrumentsInfo = new Map();
             for(const instInfo of instrumentsInfoResponse.result.list)
-                this.instrumentsInfo.set(instInfo.symbol, instInfo);
+            {
+                if(instInfo.symbol.endsWith("USDT"))
+                    this.instrumentsInfo.set(instInfo.symbol, instInfo);
+            }
 
             return instrumentsInfoResponse;
         }
